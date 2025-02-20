@@ -1,5 +1,4 @@
 require("config")
-require("plugins")
 
 ------------------ telescope ------------------
 
@@ -159,45 +158,85 @@ lspconfig.clangd.setup({
 	capabilities = capabilities,
 })
 
--- 			"nvim-lua/plenary.nvim",
--- 				"nvim-telescope/telescope-fzf-native.nvim",
--- 				build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build",
--- 			{ "nvim-telescope/telescope-ui-select.nvim" },
--- 			{ "nvim-tree/nvim-web-devicons", enabled = true },
--- Config for plugins under 5 lines long
--- return {
---
--- 	{
--- 		"numToStr/Comment.nvim",
--- 		opts = {},
--- 		lazy = false,
--- 	},
---
--- 	{
--- 		"lewis6991/gitsigns.nvim",
--- 		config = true,
--- 		lazy = false,
--- 	},
---
--- 	{
--- 		"folke/todo-comments.nvim",
--- 		event = "VimEnter",
--- 		dependencies = { "nvim-lua/plenary.nvim" },
--- 		opts = { signs = false },
--- 	},
---
--- 	{
--- 		"mbbill/undotree",
--- 		config = function()
--- 			vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle)
--- 		end,
--- 	},
---
--- 	{
--- 		"nvim-tree/nvim-web-devicons",
--- 		config = true,
--- 		opts = {
--- 			default = true,
--- 		},
--- 	},
--- }
+------------------ treesitter ------------------
+
+local treesitter = require("nvim-treesitter.configs")
+
+treesitter.setup({
+	sync_install = false,
+	auto_install = false,
+	highlight = {
+		enable = true,
+		additional_vim_regex_highlighting = false,
+	},
+	indent = { enable = true },
+})
+
+------------------ undotree ------------------
+
+vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle)
+
+------------------ harpoon ------------------
+
+local harpoon = require("harpoon")
+
+harpoon:setup({
+	settings = {
+		save_on_toggle = true,
+		sync_on_ui_close = true,
+	},
+})
+
+vim.keymap.set("n", "<leader>a", function()
+	harpoon:list():add()
+end)
+vim.keymap.set("n", "<C-e>", function()
+	harpoon.ui:toggle_quick_menu(harpoon:list())
+end)
+vim.keymap.set("n", "<leader>h", function()
+	harpoon:list():select(1)
+end)
+vim.keymap.set("n", "<leader>j", function()
+	harpoon:list():select(2)
+end)
+vim.keymap.set("n", "<leader>k", function()
+	harpoon:list():select(3)
+end)
+vim.keymap.set("n", "<leader>l", function()
+	harpoon:list():select(4)
+end)
+vim.keymap.set("n", "<C-n>", function()
+	harpoon:list():prev()
+end)
+vim.keymap.set("n", "<C-p>", function()
+	harpoon:list():next()
+end)
+
+------------------ tmux ------------------
+
+local tmux = require("tmux")
+
+tmux.setup({
+	copy_sync = {
+		-- enables copy sync. by default, all registers are synchronized.
+		-- to control which registers are synced, see the `sync_*` options.
+		enable = false,
+	},
+	navigation = {
+		-- cycles to opposite pane while navigating into the border
+		cycle_navigation = false,
+
+		-- enables default keybindings (C-hjkl) for normal mode
+		enable_default_keybindings = true,
+
+		-- prevents unzoom tmux when navigating beyond vim border
+		persist_zoom = false,
+	},
+	resize = {
+		-- enables default keybindings (A-hjkl) for normal mode
+		enable_default_keybindings = true,
+
+		resize_step_x = 5,
+		resize_step_y = 5,
+	},
+})

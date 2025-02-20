@@ -39,14 +39,6 @@ vim.opt.inccommand = "split"
 
 vim.opt.textwidth = 0
 
-vim.filetype.add({
-	extension = {
-		vert = "vert",
-		frag = "frag",
-		geom = "geom",
-	},
-})
-
 vim.cmd("autocmd BufEnter * set formatoptions-=cro")
 vim.cmd("autocmd BufEnter * setlocal formatoptions-=cro")
 
