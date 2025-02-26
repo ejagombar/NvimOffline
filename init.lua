@@ -150,20 +150,6 @@ lspconfig.clangd.setup({
 	capabilities = capabilities,
 })
 
------------------- treesitter ------------------
-
--- local treesitter = require("nvim-treesitter.configs")
---
--- treesitter.setup({
--- 	sync_install = false,
--- 	auto_install = false,
--- 	highlight = {
--- 		enable = true,
--- 		additional_vim_regex_highlighting = false,
--- 	},
--- 	indent = { enable = true },
--- })
-
 ------------------ undotree ------------------
 
 vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle)
