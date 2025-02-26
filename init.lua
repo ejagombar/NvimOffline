@@ -14,12 +14,6 @@ telescope.setup({
 	},
 })
 
--- {
--- 	"nvim-telescope/telescope-fzf-native.nvim",
--- 	build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build",
--- },
--- { "nvim-telescope/telescope-ui-select.nvim" },
---
 vim.keymap.set("n", "<leader>oh", builtin.help_tags)
 vim.keymap.set("n", "<leader>of", builtin.find_files)
 vim.keymap.set("n", "<leader>ow", builtin.grep_string)
@@ -45,6 +39,7 @@ lualine.setup({
 		section_separators = { left = "", right = "" },
 	},
 	sections = {
+		lualine_b = { "diagnostics" },
 		lualine_c = {
 			{
 				"buffers",
@@ -107,20 +102,6 @@ cmp.setup({
 	},
 })
 
-cmp.setup.cmdline(":", {
-	mapping = cmp.mapping.preset.cmdline(),
-	sources = cmp.config.sources({
-		{ name = "path" },
-	}, {
-		{
-			name = "cmdline",
-			option = {
-				ignore_cmds = { "Man", "!" },
-			},
-		},
-	}),
-})
-
 ------------------ nvim-lspconfig ------------------
 
 local lspconfig = require("lspconfig")
@@ -171,17 +152,17 @@ lspconfig.clangd.setup({
 
 ------------------ treesitter ------------------
 
-local treesitter = require("nvim-treesitter.configs")
-
-treesitter.setup({
-	sync_install = false,
-	auto_install = false,
-	highlight = {
-		enable = true,
-		additional_vim_regex_highlighting = false,
-	},
-	indent = { enable = true },
-})
+-- local treesitter = require("nvim-treesitter.configs")
+--
+-- treesitter.setup({
+-- 	sync_install = false,
+-- 	auto_install = false,
+-- 	highlight = {
+-- 		enable = true,
+-- 		additional_vim_regex_highlighting = false,
+-- 	},
+-- 	indent = { enable = true },
+-- })
 
 ------------------ undotree ------------------
 
@@ -252,38 +233,31 @@ tmux.setup({
 	},
 })
 
---------- Define the path where the build directory is located
--- local build_dir = vim.fn.stdpath("data") .. "/site/pack/offline/start/telescope-fzf-native.nvim/build"
---
--- -- Function to check if the plugin is built
--- local function is_built()
--- 	-- Check if the build directory or binary exists
--- 	return vim.fn.isdirectory(build_dir) == 1
--- end
---
--- -- Function to build the plugin if it's not built yet
--- local function build_plugin()
--- 	-- Run the build command
--- 	local build_command = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release"
---
--- 	-- Set the current working directory to the plugin directory and run the build command
--- 	vim.fn.chdir(vim.fn.stdpath("data") .. "/pack/packer/start/telescope-fzf-native.nvim")
--- 	local result = vim.fn.system(build_command)
---
--- 	-- Check if the build was successful
--- 	if vim.v.shell_error == 0 then
--- 		print("Plugin built successfully!")
--- 	else
--- 		print("Error building plugin: " .. result)
--- 	end
--- end
---
--- -- On startup, check if the plugin is built, and if not, build it
--- if not is_built() then
--- 	print("Building telescope-fzf-native.nvim plugin...")
--- 	build_plugin()
--- else
--- 	print("telescope-fzf-native.nvim plugin is already built.")
--- end
---
--- require("telescope").load_extension("fzf")
+------------------ Other Setup ------------------
+
+-- Setup extension helptags
+vim.cmd("helptags ALL")
+
+-- Build fzf
+local build_dir = vim.fn.stdpath("config") .. "/pack/offline/start/telescope-fzf-native.nvim/build"
+
+local function is_built()
+	return vim.fn.isdirectory(build_dir) == 1
+end
+
+if not is_built() then
+	print("Building telescope-fzf-native.nvim plugin...")
+
+	local build_command = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release"
+
+	vim.fn.chdir(vim.fn.stdpath("config") .. "/pack/offline/start/telescope-fzf-native.nvim")
+	local result = vim.fn.system(build_command)
+
+	if vim.v.shell_error == 0 then
+		print("Plugin built successfully!")
+	else
+		print("Error building plugin: " .. result)
+	end
+end
+
+require("telescope").load_extension("fzf")
