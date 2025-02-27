@@ -39,6 +39,7 @@ lualine.setup({
 		section_separators = { left = "", right = "" },
 	},
 	sections = {
+		lualine_b = { "diagnostics" },
 		lualine_c = {
 			{
 				"buffers",
@@ -71,7 +72,12 @@ local function my_on_attach(bufnr)
 	vim.keymap.set("n", "?", api.tree.toggle_help)
 end
 
-nvimtree.setup({ on_attach = my_on_attach })
+nvimtree.setup({
+	on_attach = my_on_attach,
+	git = {
+		enable = false,
+	},
+})
 
 vim.keymap.set("n", "<leader>ov", api.tree.open)
 
@@ -94,20 +100,6 @@ cmp.setup({
 		{ name = "nvim_lsp" },
 		{ name = "path" },
 	},
-})
-
-cmp.setup.cmdline(":", {
-	mapping = cmp.mapping.preset.cmdline(),
-	sources = cmp.config.sources({
-		{ name = "path" },
-	}, {
-		{
-			name = "cmdline",
-			option = {
-				ignore_cmds = { "Man", "!" },
-			},
-		},
-	}),
 })
 
 ------------------ nvim-lspconfig ------------------
@@ -156,20 +148,6 @@ lspconfig.clangd.setup({
 	},
 	filetypes = { "cpp", "c", "hpp", "cc", "cxx", "hxx", "h" },
 	capabilities = capabilities,
-})
-
------------------- treesitter ------------------
-
-local treesitter = require("nvim-treesitter.configs")
-
-treesitter.setup({
-	sync_install = false,
-	auto_install = false,
-	highlight = {
-		enable = true,
-		additional_vim_regex_highlighting = false,
-	},
-	indent = { enable = true },
 })
 
 ------------------ undotree ------------------
@@ -240,3 +218,32 @@ tmux.setup({
 		resize_step_y = 5,
 	},
 })
+
+------------------ Other Setup ------------------
+
+-- Setup extension helptags
+vim.cmd("helptags ALL")
+
+-- Build fzf
+local build_dir = vim.fn.stdpath("config") .. "/pack/offline/start/telescope-fzf-native.nvim/build"
+
+local function is_built()
+	return vim.fn.isdirectory(build_dir) == 1
+end
+
+if not is_built() then
+	print("Building telescope-fzf-native.nvim plugin...")
+
+	local build_command = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release"
+
+	vim.fn.chdir(vim.fn.stdpath("config") .. "/pack/offline/start/telescope-fzf-native.nvim")
+	local result = vim.fn.system(build_command)
+
+	if vim.v.shell_error == 0 then
+		print("Plugin built successfully!")
+	else
+		print("Error building plugin: " .. result)
+	end
+end
+
+require("telescope").load_extension("fzf")

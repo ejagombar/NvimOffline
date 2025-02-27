@@ -11,6 +11,7 @@ This is a fairly feature complete vim configuration, with proper code highlighti
 `init.lua` Configuration of the installed plugins
 
 To install this configuration, it should be cloned into ~/.config/
+The code in tmux configuration in ./pack/offline/start/tmux.nvim/.tmux.conf should be appended to your .tmux.conf to allow for seamless transition between tmux and vim panes. Panes can be moved between with ctrl + hjkl and resized with alt + hjkl.
 
 ## Installed plugins
 
@@ -31,13 +32,14 @@ To install this configuration, it should be cloned into ~/.config/
 
 ## Notes
 - At the moment, almost no lazy loading is being used. This can be implemented, however there is not a noticable startup delay when entering neovim.
-- Treesitter has the capability to download parsers using either curl or git. This has been disabled in the config.
 - For the [tmux.nvim](https://github.com/aserowy/tmux.nvim) plugin to work correctly, some configuration needs to be added to .tmux.conf
 - For everything to work properly, clangd needs to be isntalled for lsp features.
 - Using Fzf as the backend for telescope would make it much faster.
+- The treesitter plugin has been removed as neovim now integrates this by default. The .so compiled parsers need to be installed.
 
 ## Todo
-- Better documentation, more info about plugins, default keymaps 
-- Remove uneccesary files from local plugin repositories
 - Treesitter parser installation
-- Add fzf
+- Add Bear for compile_commands.json
+- Snippets
+
+## Demo Pictures
