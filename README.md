@@ -43,3 +43,13 @@ The code in tmux configuration in ./pack/offline/start/tmux.nvim/.tmux.conf shou
 - Snippets
 
 ## Demo Pictures
+![Screenshot From 2025-02-26 23-43-28](https://github.com/user-attachments/assets/cea6febb-bc73-4af1-81f9-753f0d839199)
+Goto definition and hover to show declaration / documentation
+![Screenshot From 2025-02-26 23-44-53](https://github.com/user-attachments/assets/d5364166-0e71-4f93-bb69-ce18a34a3980)
+Fuzzy file searching
+![Screenshot From 2025-02-26 23-45-23](https://github.com/user-attachments/assets/4a347993-4bb2-4fb5-9fdb-1e8991b11c82)
+Grep all files using telescope
+![Screenshot From 2025-02-26 23-46-21](https://github.com/user-attachments/assets/c688ddf5-c643-4ce2-a292-640dbc5ceaaf)
+Improved File explorer
+![Screenshot From 2025-02-26 23-48-27](https://github.com/user-attachments/assets/c72df16c-366c-48a6-8455-411c0dc75538)
+Undo tree (left). Error highlighting and warnings (requires clangd)
