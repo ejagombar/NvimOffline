@@ -53,3 +53,30 @@ Grep all files using telescope
 Improved File explorer
 ![Screenshot From 2025-02-26 23-48-27](https://github.com/user-attachments/assets/c72df16c-366c-48a6-8455-411c0dc75538)
 Undo tree (left). Error highlighting and warnings (requires clangd)
+
+
+# Documentation
+
+## File Explorer
+The plugin nvim-tree provides a file explorer similar to the one found in common IDEs such as VSCode. It overrides and disables the default vim file explorer Netrw, so if you prefer the original one, it can be re-enabled by commenting out the nvim-tree config code in the init.lua config file.
+
+**<leader>ov** (Open Viewer) Opens the file tree
+ 
+## File Search (Telescope)
+Telescope is a fuzzy finder, used to search for files and strings. Very useful for jumping around files and searching for strings in multiple files.
+
+**<leader>of** (Open Files) Opens a window to search for files in the current and all subdirectories
+**<leader>os** (Open String) Opens a window to search for strings in the files in the current and all subdirectories
+**<leader>ow** (Open Word) Opens a window to search for the string currently under the cursor
+**<leader>ob** (Open buffers) Search in the current open vim buffers
+**<leader>or** (Open resume) Resume the last search
+**<leader>oh** (Open help) Search nvim documentation and plugin documentation
+
+## Autocomplete, Language Server Features
+The below keybinds are related to language server features. Such as autocomplete, goto definition, variable renaming, etc.
+
+**K** Displays a floating window, showing the definition of the symbol under the cursor.
+**gd** (Goto Definition) Jump to the definition of the function under the cursor.
+**rn** (Rename) Rename the current variable/function under the cursor. This will work across multiple files.
+
+
