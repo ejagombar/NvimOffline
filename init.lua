@@ -224,26 +224,4 @@ tmux.setup({
 -- Setup extension helptags
 vim.cmd("helptags ALL")
 
--- Build fzf
-local build_dir = vim.fn.stdpath("config") .. "/pack/offline/start/telescope-fzf-native.nvim/build"
-
-local function is_built()
-	return vim.fn.isdirectory(build_dir) == 1
-end
-
-if not is_built() then
-	print("Building telescope-fzf-native.nvim plugin...")
-
-	local build_command = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release"
-
-	vim.fn.chdir(vim.fn.stdpath("config") .. "/pack/offline/start/telescope-fzf-native.nvim")
-	local result = vim.fn.system(build_command)
-
-	if vim.v.shell_error == 0 then
-		print("Plugin built successfully!")
-	else
-		print("Error building plugin: " .. result)
-	end
-end
-
 require("telescope").load_extension("fzf")
