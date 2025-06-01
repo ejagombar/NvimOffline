@@ -332,9 +332,9 @@ vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle)
 ------------------ qs-lint -------------------
 
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-	pattern = "*.qs",
+	pattern = "*.library",
 	callback = function()
-		vim.bo.filetype = "qs"
+		vim.bo.filetype = "library"
 	end,
 })
 
