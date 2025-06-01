@@ -329,6 +329,23 @@ vim.api.nvim_create_autocmd("FileType", {
 
 vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle)
 
+------------------ qs-lint -------------------
+
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+	pattern = "*.qs",
+	callback = function()
+		vim.bo.filetype = "qs"
+	end,
+})
+
+require("qs_lint").setup({
+	cmd = "/QS-Lint/qs_lint",
+	filetypes = { "library", "module" },
+	debounce_time = 300,
+	use_json = true,
+	auto_save = true,
+})
+
 ------------------ harpoon ------------------
 
 local harpoon = require("harpoon")
