@@ -95,6 +95,7 @@ end)
 -- =================================== Plugin Settings ===================================
 
 vim.opt.packpath:append("/tsl/devtools/nvim/nvim-plugins") -- Do not delete!
+vim.opt.runtimepath:append("/home/ejago/Repos/Projects/NvimOffline/")
 
 ------------------ telescope ------------------
 
@@ -292,6 +293,10 @@ local capabilities = vim.tbl_deep_extend(
 	vim.lsp.protocol.make_client_capabilities(),
 	require("cmp_nvim_lsp").default_capabilities()
 )
+
+vim.treesitter.language.register("c", { "c", "h" })
+vim.treesitter.language.register("cpp", { "cpp", "hpp", "cxx", "hxx" })
+vim.treesitter.language.register("javascript", { "javascript", "js" })
 
 -- Configure `clangd` for C++
 lspconfig.clangd.setup({
