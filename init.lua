@@ -19,43 +19,61 @@ vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist)
 -- Replace the currently highlighted text with the string in your default copy buffer
 vim.keymap.set("x", "<leader>p", [["_dP]])
 
+-- Run pfile on the current file. Mnemonic: Helix Edit
+vim.keymap.set("n", "<leader>he", function()
+	local filepath = vim.fn.expand("%")
+	if filepath == "" then
+		vim.notify("No file in buffer to pfile!", vim.log.levels.WARN)
+		return
+	end
+
+	local cmd = { "bash", "-c", ". /tsl/devtools/profile/paliases && pfile " .. vim.fn.shellescape(filepath) }
+	vim.notify(vim.fn.system(cmd))
+end)
+
 -- =================================== Neovim Settings ===================================
-vim.opt.nu = true
-vim.opt.relativenumber = true
+
+-- Strongly recommended settings
+vim.opt.undofile = true
+vim.opt.termguicolors = false
+vim.opt.clipboard = "unnamedplus"
+vim.opt.signcolumn = "yes"
+
+vim.g.loaded_perl_provider = false
+
+vim.opt.swapfile = false
+vim.opt.backup = false
 
 vim.opt.tabstop = 2
 vim.opt.softtabstop = 2
 vim.opt.shiftwidth = 2
 vim.opt.expandtab = true
 
+vim.filetype.add({
+	extension = {
+		module = "module",
+		library = "library",
+		script = "script",
+	},
+})
+
+-- Preferential settings
+vim.opt.nu = true
+vim.opt.relativenumber = true
+
 vim.opt.smartindent = true
 
 vim.opt.wrap = true
 
-vim.opt.swapfile = false
-vim.opt.backup = false
-vim.opt.undofile = true
-
 vim.opt.hlsearch = true
 vim.opt.incsearch = true
-
-vim.opt.termguicolors = false
 
 vim.opt.scrolloff = 10
 
 vim.opt.updatetime = 50
-
 vim.opt.timeoutlen = 300
 
-vim.opt.signcolumn = "yes"
-
 vim.o.cursorline = true
-
-vim.opt.swapfile = false
-
-vim.opt.clipboard = "unnamedplus"
-
-vim.g.loaded_perl_provider = false -- disable warning in :checkhealth
 
 vim.opt.inccommand = "split"
 
@@ -72,29 +90,9 @@ augroup CursorLineNrHighlight
 augroup END
 ]])
 
-vim.filetype.add({
-	extension = {
-		module = "module",
-		library = "library",
-		script = "script",
-	},
-})
-
--- Run pfile on the current file. Mnemonic: Helix Edit
-vim.keymap.set("n", "<leader>he", function()
-	local filepath = vim.fn.expand("%")
-	if filepath == "" then
-		vim.notify("No file in buffer to pfile!", vim.log.levels.WARN)
-		return
-	end
-
-	local cmd = { "bash", "-c", ". /tsl/devtools/profile/paliases && pfile " .. vim.fn.shellescape(filepath) }
-	vim.notify(vim.fn.system(cmd))
-end)
-
 -- =================================== Plugin Settings ===================================
 
-vim.opt.packpath:append("/tsl/devtools/nvim/nvim-plugins") -- Do not delete!
+vim.opt.packpath:append("/home/ejago/Repos/Projects/NvimOffline/") -- Do not delete!
 vim.opt.runtimepath:append("/home/ejago/Repos/Projects/NvimOffline/")
 
 ------------------ telescope ------------------
@@ -135,6 +133,16 @@ vim.keymap.set("n", "<leader>vh", function()
 	builtin.help_tags()
 end)
 
+vim.keymap.set("n", "<leader>oc", function()
+	require("telescope.builtin").live_grep({
+		prompt_title = "Search Prod Files",
+		cwd = "~/prod",
+		additional_args = function(opts)
+			return { "--glob", "*.cpp", "--glob", "*.hpp", "--glob", "*.a", "--glob", "*.so" }
+		end,
+	})
+end)
+
 ------------------ lualine ------------------
 
 local lualine = require("lualine")
@@ -163,6 +171,8 @@ vim.cmd("colorscheme onedark")
 
 ------------------ nvim-tree ------------------
 
+--[[
+
 local nvimtree = require("nvim-tree")
 local api = require("nvim-tree.api")
 
@@ -173,65 +183,69 @@ vim.g.loaded_netrwPlugin = 1
 vim.g.nvim_tree_respect_buf_cwd = 1
 
 local function my_on_attach(bufnr)
-	-- default mappings
-	api.config.mappings.default_on_attach(bufnr)
+    -- default mappings
+    api.config.mappings.default_on_attach(bufnr)
 
-	-- custom mappings
-	vim.keymap.set("n", "<C-t>", api.tree.change_root_to_parent)
-	vim.keymap.set("n", "?", api.tree.toggle_help)
+    -- custom mappings
+    vim.keymap.set("n", "<C-t>", api.tree.change_root_to_parent)
+    vim.keymap.set("n", "?", api.tree.toggle_help)
 end
 
 local HEIGHT_RATIO = 0.8
 local WIDTH_RATIO = 0.75
 
 nvimtree.setup({
-	disable_netrw = true,
-	hijack_netrw = true,
-	sync_root_with_cwd = true,
-	update_cwd = true,
-	update_focused_file = {
-		enable = true,
-		update_cwd = true,
-	},
-	view = {
-		relativenumber = true,
-		float = {
-			enable = true,
-			open_win_config = function()
-				local screen_w = vim.opt.columns:get()
-				local screen_h = vim.opt.lines:get() - vim.opt.cmdheight:get()
-				local window_w = screen_w * WIDTH_RATIO
-				local window_h = screen_h * HEIGHT_RATIO
-				local window_w_int = math.floor(window_w)
-				local window_h_int = math.floor(window_h)
-				local center_x = (screen_w - window_w) / 2
-				local center_y = ((vim.opt.lines:get() - window_h) / 2) - vim.opt.cmdheight:get()
-				return {
-					border = "rounded",
-					relative = "editor",
-					row = center_y,
-					col = center_x,
-					width = window_w_int,
-					height = window_h_int,
-				}
-			end,
-		},
-		width = function()
-			return math.floor(vim.opt.columns:get() * WIDTH_RATIO)
-		end,
-	},
+    disable_netrw = true,
+    hijack_netrw = true,
+    sync_root_with_cwd = true,
+    update_cwd = true,
+    update_focused_file = {
+        enable = true,
+        update_cwd = true,
+    },
+    view = {
+        relativenumber = true,
+        float = {
+            enable = true,
+            open_win_config = function()
+                local screen_w = vim.opt.columns:get()
+                local screen_h = vim.opt.lines:get() - vim.opt.cmdheight:get()
+                local window_w = screen_w * WIDTH_RATIO
+                local window_h = screen_h * HEIGHT_RATIO
+                local window_w_int = math.floor(window_w)
+                local window_h_int = math.floor(window_h)
+                local center_x = (screen_w - window_w) / 2
+                local center_y = ((vim.opt.lines:get() - window_h) / 2) - vim.opt.cmdheight:get()
+                return {
+                    border = "rounded",
+                    relative = "editor",
+                    row = center_y,
+                    col = center_x,
+                    width = window_w_int,
+                    height = window_h_int,
+                }
+            end,
+        },
+        width = function()
+            return math.floor(vim.opt.columns:get() * WIDTH_RATIO)
+        end,
+    },
 
-	on_attach = my_on_attach,
-	git = {
-		enable = false,
-	},
-	renderer = { icons = { show = { file = false, folder = false, folder_arrow = false } } },
-	filters = {
-		custom = { "*.o", "*.lo" },
-	},
+    on_attach = my_on_attach,
+    git = {
+        enable = false,
+    },
+    renderer = { icons = { show = { file = false, folder = false, folder_arrow = false } } },
+    filters = {
+        custom = { "*.o", "*.lo" },
+    },
 })
 
 vim.keymap.set("n", "<leader>ov", api.tree.open)
+]]
+--
+
+vim.keymap.set("n", "<leader>ov", ":Ex<CR>")
 
 ------------------ nvim-cmp ------------------
 
@@ -259,74 +273,86 @@ cmp.setup({
 
 ------------------ nvim-lspconfig ------------------
 
+--[[
+
 local lspconfig = require("lspconfig")
 
 -- local diagnostic_signs = { Error = "", Warn = "", Hint = "󰠠", Info = "" } -- Use this if you do not have a font that symbols
 local diagnostic_signs = { Error = "E", Warn = "W", Hint = "H", Info = "I" }
 
 for type, icon in pairs(diagnostic_signs) do
-	vim.fn.sign_define("DiagnosticSign" .. type, { text = icon, texthl = "DiagnosticSign" .. type })
+    vim.fn.sign_define("DiagnosticSign" .. type, { text = icon, texthl = "DiagnosticSign" .. type })
 end
 
 vim.api.nvim_create_autocmd("LspAttach", {
-	group = vim.api.nvim_create_augroup("lsp-attach", { clear = true }),
-	callback = function(event)
-		local map = function(keys, func)
-			vim.keymap.set("n", keys, func, { buffer = event.buf })
-		end
+    group = vim.api.nvim_create_augroup("lsp-attach", { clear = true }),
+    callback = function(event)
+        local map = function(keys, func)
+            vim.keymap.set("n", keys, func, { buffer = event.buf })
+        end
 
-		map("gd", require("telescope.builtin").lsp_definitions)
-		map("gr", require("telescope.builtin").lsp_references)
-		map("gi", require("telescope.builtin").lsp_implementations)
-		map("<leader>D", require("telescope.builtin").lsp_type_definitions)
-		map("<leader>ds", require("telescope.builtin").lsp_document_symbols)
-		map("<leader>ws", require("telescope.builtin").lsp_dynamic_workspace_symbols)
-		map("<leader>rn", vim.lsp.buf.rename)
-		map("<leader>ca", vim.lsp.buf.code_action)
-		map("K", vim.lsp.buf.hover)
-		map("gD", vim.lsp.buf.declaration)
-	end,
+        map("gd", require("telescope.builtin").lsp_definitions)
+        map("gr", require("telescope.builtin").lsp_references)
+        map("gi", require("telescope.builtin").lsp_implementations)
+        map("<leader>D", require("telescope.builtin").lsp_type_definitions)
+        map("<leader>ds", require("telescope.builtin").lsp_document_symbols)
+        map("<leader>ws", require("telescope.builtin").lsp_dynamic_workspace_symbols)
+        map("<leader>rn", vim.lsp.buf.rename)
+        map("<leader>ca", vim.lsp.buf.code_action)
+        map("K", vim.lsp.buf.hover)
+        map("gD", vim.lsp.buf.declaration)
+    end,
 })
 
 local capabilities = vim.tbl_deep_extend(
-	"force",
-	vim.lsp.protocol.make_client_capabilities(),
-	require("cmp_nvim_lsp").default_capabilities()
+    "force",
+    vim.lsp.protocol.make_client_capabilities(),
+    require("cmp_nvim_lsp").default_capabilities()
 )
-
-vim.treesitter.language.register("c", { "c", "h" })
-vim.treesitter.language.register("cpp", { "cpp", "hpp", "cxx", "hxx" })
-vim.treesitter.language.register("javascript", { "javascript", "js" })
 
 -- Configure `clangd` for C++
 lspconfig.clangd.setup({
-	cmd = { "clangd" },
-	init_options = {
-		usePlaceholders = true,
-		completeUnimported = true,
-		clangdFileStatus = true,
-		semanticHighlighting = true,
-	},
-	filetypes = { "cpp", "c", "hpp", "cc", "cxx", "hxx", "h" },
-	capabilities = capabilities,
-	on_attach = function(client, bufnr)
-		-- client.server_capabilities.semanticTokensProvider = nil -- Disable lsp highlighting outright. Will do this once we have the cpp treesitter parser installed. The C one does not work great.
-	end,
+    cmd = { "clangd" },
+    init_options = {
+        usePlaceholders = true,
+        completeUnimported = true,
+        clangdFileStatus = true,
+        semanticHighlighting = true,
+    },
+    filetypes = { "cpp", "c", "hpp", "cc", "cxx", "hxx", "h" },
+    capabilities = capabilities,
+    on_attach = function(client, bufnr)
+        -- client.server_capabilities.semanticTokensProvider = nil -- Disable lsp highlighting outright. Will do this once we have the cpp treesitter parser installed. The C one does not work great.
+    end,
 })
+
+--]]
 
 ------------------ nvim-treesitter ------------------
 
-local filetypes = { "c", "cpp", "library", "module", "script", "hpp" }
-vim.treesitter.language.register("c", filetypes)
+vim.treesitter.language.register("javascript", { "library", "module" })
 
-local ts_aug = vim.api.nvim_create_augroup("AutoTSStart", { clear = true })
+local ts_aug = vim.api.nvim_create_augroup("TSHighlight", { clear = true })
+
+local max_filesize = 512 * 2048
 
 vim.api.nvim_create_autocmd("FileType", {
 	group = ts_aug,
-	pattern = filetypes,
+	pattern = { "library", "module" },
 	callback = function(args)
-		local parser = (args.match == "cpp") and "cpp" or "c"
-		vim.treesitter.start(args.buf, "c")
+		local buf = args.buf
+		local lang = "javascript"
+		local filename = vim.api.nvim_buf_get_name(buf)
+		local stat = vim.loop.fs_stat(filename)
+
+		if stat and stat.size < max_filesize then
+			vim.treesitter.start(buf, lang)
+
+			local parser = vim.treesitter.get_parser(buf, lang)
+			if parser then
+				vim.treesitter.highlighter.new(parser)
+			end
+		end
 	end,
 })
 
@@ -336,20 +362,20 @@ vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle)
 
 ------------------ qs-lint -------------------
 
-vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-	pattern = "*.library",
-	callback = function()
-		vim.bo.filetype = "library"
-	end,
-})
-
-require("qs_lint").setup({
-	cmd = "/QS-Lint/qs_lint",
-	filetypes = { "library", "module" },
-	debounce_time = 300,
-	use_json = true,
-	auto_save = true,
-})
+-- vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+--     pattern = "*.library",
+--     callback = function()
+--         vim.bo.filetype = "library"
+--     end,
+-- })
+--
+-- require("qs_lint").setup({
+--     cmd = "/QS-Lint/qs_lint",
+--     filetypes = { "library", "module" },
+--     debounce_time = 300,
+--     use_json = true,
+--     auto_save = true,
+-- })
 
 ------------------ harpoon ------------------
 
@@ -394,17 +420,14 @@ tmux.setup({
 	navigation = {
 		-- cycles to opposite pane while navigating into the border
 		cycle_navigation = false,
-
 		-- enables default keybindings (C-hjkl) for normal mode
 		enable_default_keybindings = true,
-
 		-- prevents unzoom tmux when navigating beyond vim border
 		persist_zoom = false,
 	},
 	resize = {
 		-- enables default keybindings (A-hjkl) for normal mode
 		enable_default_keybindings = true,
-
 		resize_step_x = 5,
 		resize_step_y = 5,
 	},
